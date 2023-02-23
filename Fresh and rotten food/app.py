@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-model_to_predict = tf.keras.models.load_model('chestmodel.hdf5')
+model_to_predict = tf.keras.models.load_model('CNN_model.h5')
 def predict_covid(test_image):
     img = cv2.imread(test_image)
     img = img / 255.0
