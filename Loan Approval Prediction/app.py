@@ -36,7 +36,14 @@ import joblib
 model = joblib.load('RF.C5')
 
 # Define a function to make predictions
-def predict_loan_status(Gender, Married, Dependents, Education, Self_Employed, ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term, Credit_History, Property_Area):
+def predict_loan_status(Gender, Married, Dependents, Education, Self_Employed, ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Amount_Term, Credit_History, Property_Area,Total_income):
+    # Encode categorical features
+    Gender = 0 if Gender == "Male" else 1
+    Married = 1 if Married == "Married" else 0
+    Education = 1 if Education == "Graduate" else 0
+    Self_Employed = 1 if Self_Employed == "Yes" else 0
+    Property_Area = 0 if Property_Area == "Rural" else 1 if Property_Area == "Semiurban" else 2
+    
     data = {'Gender': Gender,
             'Married': Married,
             'Dependents': Dependents,
@@ -47,7 +54,8 @@ def predict_loan_status(Gender, Married, Dependents, Education, Self_Employed, A
             'LoanAmount': LoanAmount,
             'Loan_Amount_Term': Loan_Amount_Term,
             'Credit_History': Credit_History,
-            'Property_Area': Property_Area}
+            'Property_Area': Property_Area,
+            'Total_income':Total_income}
     features = pd.DataFrame(data, index=[0])
     return model.predict(features)[0]
 
@@ -65,9 +73,10 @@ loan_amount = st.slider("Loan Amount", min_value=9, max_value=700, step=1)
 loan_term = st.selectbox("Loan Term (in years)", options=[12, 36, 60, 84, 120, 180, 240, 300, 360, 480])
 credit_history = st.selectbox("Credit History", options=[0, 1])
 property_area = st.selectbox("Property Area", options=["Rural", "Semiurban", "Urban"])
+total_income = st.slider("Total Income", min_value=150, max_value=81000, step=100)
 # When the user clicks the 'Predict' button, make a prediction
 if st.button("Predict"):
-    result = predict_loan_status(gender, married, dependents, education, self_employed, income, co_income, loan_amount, loan_term, credit_history, property_area)
+    result = predict_loan_status(gender, married, dependents, education, self_employed, income, co_income, loan_amount, loan_term, credit_history, property_area,total_income)
     if result == 0:
         st.error("The loan application was denied.")
     else:

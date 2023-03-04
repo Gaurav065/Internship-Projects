@@ -5,11 +5,11 @@ import numpy as np
 from PIL import Image
 
 model_to_predict = tf.keras.models.load_model('garbage_plastic_inceptionResnetv2.h5')
-def predict_covid(test_image):
-    img = cv2.imread(test_image)
-    img = img / 255.0
+
+def predict_covid(img):
     img = cv2.resize(img, (128, 128))
-    img = img.reshape(1,128,128,3)
+    img = img / 255.0
+    img = img.reshape(1, 128, 128, 3)
     prediction = model_to_predict.predict(img)
     pred_class = np.argmax(prediction, axis = -1)
     return pred_class
@@ -18,34 +18,57 @@ def load_image(image_file):
     img = Image.open(image_file)
     return img
 
+def detect_plastic(img):
+    pred = predict_covid(img)
+    if pred[0] == 0:
+        return 'cardboard'
+    elif pred[0] == 1:
+        return 'glass'
+    elif pred[0] == 2:
+        return 'metal'
+    elif pred[0] == 3:
+        return 'paper'
+    elif pred[0] == 4:
+        return 'plastic'
+    elif pred[0] == 5:
+        return 'trash'
 
 st.write("Plastic detection using InceptionResnetV2")
 
+option = st.selectbox('Select mode', ['Image', 'Video'])
 
+if option == 'Image':
+    pic = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+    submit = st.button('Detect')
 
-pic = st.file_uploader("Upload a picture!")
-submit = st.button('submit')
+    if submit and pic is not None:
+        st.image(load_image(pic), width=250)
+        img = np.array(load_image(pic))
+        pred = detect_plastic(img)
+        st.write(f'The object in the image is {pred}.')
 
+elif option == 'Video':
+    vid = st.file_uploader("Upload a video", type=["mp4", "mov"])
+    submit = st.button('Detect')
 
+    if submit and vid is not None:
+        video_bytes = vid.read()
+        st.video(video_bytes)
 
-if submit:
-    pic_details = {"filename":pic.name, 'filetype':pic.type, 'filesize':pic.size}
-    st.write(pic_details)
+        # OpenCV requires a byte object to read the video file
+        video_file = np.asarray(bytearray(video_bytes), dtype=np.uint8)
+        cap = cv2.VideoCapture(video_file)
 
-    st.image(load_image(pic), width=250)
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
 
-    with open('test.jpg', 'wb') as f:
-        f.write(pic.getbuffer())
-    pred = predict_covid('test.jpg')
-    if pred[0] == 0:
-        st.write('its not plastic but cardboard')
-    elif pred[0] == 1:
-        st.write('its not plastic but glass')
-    elif pred[0] == 2:
-        st.write('its not plastic but metal')
-    elif pred[0] == 3:
-        st.write('its not plastic but paper')
-    elif pred[0] == 4:
-        st.write('Its plastic')
-    elif pred[0] == 5:
-        st.write('its not plastic but trash and that to random')
+            # Detect the object in the frame
+            pred = detect_plastic(frame)
+            
+            # Display the frame and the detected object label
+            cv2.putText(frame, pred, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+            st.image(frame, channels='BGR', use_column_width=True)
+
+        cap.release()
