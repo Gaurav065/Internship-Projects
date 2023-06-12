@@ -4,10 +4,10 @@ import cv2
 import numpy as np
 from PIL import Image
 
-model_to_predict = tf.keras.models.load_model('garbage_plastic_inceptionResnetv2.h5')
+model_to_predict = tf.keras.models.load_model('updated.h5')
 
 def predict_covid(img):
-    img = cv2.resize(img, (128, 128))
+    img = cv2.resize(img, (224, 224))
     img = img / 255.0
     img = img.reshape(1, 128, 128, 3)
     prediction = model_to_predict.predict(img)
@@ -33,42 +33,4 @@ def detect_plastic(img):
     elif pred[0] == 5:
         return 'trash'
 
-st.write("Plastic detection using InceptionResnetV2")
 
-option = st.selectbox('Select mode', ['Image', 'Video'])
-
-if option == 'Image':
-    pic = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-    submit = st.button('Detect')
-
-    if submit and pic is not None:
-        st.image(load_image(pic), width=250)
-        img = np.array(load_image(pic))
-        pred = detect_plastic(img)
-        st.write(f'The object in the image is {pred}.')
-
-elif option == 'Video':
-    vid = st.file_uploader("Upload a video", type=["mp4", "mov"])
-    submit = st.button('Detect')
-
-    if submit and vid is not None:
-        video_bytes = vid.read()
-        st.video(video_bytes)
-
-        # OpenCV requires a byte object to read the video file
-        video_file = np.asarray(bytearray(video_bytes), dtype=np.uint8)
-        cap = cv2.VideoCapture(video_file)
-
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-
-            # Detect the object in the frame
-            pred = detect_plastic(frame)
-            
-            # Display the frame and the detected object label
-            cv2.putText(frame, pred, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-            st.image(frame, channels='BGR', use_column_width=True)
-
-        cap.release()

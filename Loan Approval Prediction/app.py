@@ -49,7 +49,7 @@ def predict_loan_status(Gender, Married, Dependents, Education, Self_Employed, A
             'Dependents': Dependents,
             'Education': Education,
             'Self_Employed': Self_Employed,
-            'ApplicantIncome': ApplicantIncome,
+            'ApplicantIncome': ApplicantIncome, 
             'CoapplicantIncome': CoapplicantIncome,
             'LoanAmount': LoanAmount,
             'Loan_Amount_Term': Loan_Amount_Term,

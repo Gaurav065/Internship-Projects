@@ -1,0 +1,26 @@
+SO as earlier all the libs are already installed, just installation of the streamlit lib is needed
+
+run pip install streamlit to install the streamlit lib
+
+now we have to apps one for only audio and one for both video and audio
+
+there are some deafult file that are already inculded in the folder
+
+
+just to note that this is made for speech and podcasts so some of the music audios and video wont work
+because our model is not trained to do so dont  try to upload music video we won get summary for them but
+will get the text converstion for them
+
+to run only for audio
+type stremalit run app.py in the terminal
+
+Now to run for both audio and video files use the updated_app.py note only mp4 and mp3 formats are supported
+
+there is an example of the music video also that can be used to make transcription 
+rest you can download any example videos or podcasts just make sure that they are in the mp3 format or mp4
+ 
+
+Do read this to run this project properly
+ 
+this demo video is also inculded.
+thankyou.

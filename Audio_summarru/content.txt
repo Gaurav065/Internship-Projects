@@ -1,0 +1,9 @@
+Things added
+1. Function to convert any text document in 2 line summary
+2. Audio based function that can convert any audio file to text the lenght may vary till 2hrs 
+3. Video function that converts the Video to audio
+4. App made only for audio summay [app.py]
+5. App made for both video and audio summary [updated_app.py]
+6. Natural Language processing using summy
+7. Streamlit ui for user interation and displaying the results of both transcripted text and audio summary
+8. Adjustable summary length
